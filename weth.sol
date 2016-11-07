@@ -69,7 +69,7 @@ contract WETH {
     function withdraw(uint value) {
         assert(balanceOf[msg.sender] >= value);
         balanceOf[msg.sender] -= value;
-        assert(msg.sender.call.value(value)());
+        assert(msg.sender.send(value));
         Withdrawal(msg.sender, value);
     }
 
