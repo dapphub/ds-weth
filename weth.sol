@@ -12,7 +12,7 @@ contract WETH {
     mapping (address => uint)  public  balanceOf;
 
     event Transfer(
-        address  indexed  spender,
+        address  indexed  owner,
         address  indexed  recipient,
         uint              value
     );
