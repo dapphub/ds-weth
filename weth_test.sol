@@ -38,15 +38,15 @@ contract WETHTest is Test {
         uint original = this.balance;
         expectEventsExact(weth);
 
-        Deposit(this, 3);
-        weth.deposit.value(3)();
+        Deposit(this, 7);
+        weth.deposit.value(7)();
 
-        Withdrawal(this, 1);
-        weth.withdraw(1);
-        assertEq(this.balance, original - 2);
+        Withdrawal(this, 3);
+        weth.withdraw(3);
+        assertEq(this.balance, original - 4);
 
-        Withdrawal(this, 2);
-        weth.withdraw(2);
+        Withdrawal(this, 4);
+        weth.withdraw(4);
         assertEq(this.balance, original);
     }
 }
