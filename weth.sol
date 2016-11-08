@@ -1,21 +1,31 @@
 pragma solidity ^0.4.4;
 
 contract WETH {
-    function totalSupply() constant returns (uint) {
-        return this.balance;
+    function assert(bool condition) internal {
+        if (!condition) throw;
     }
 
-    //------------------------------------------------------
-    // Balances and transfers
-    //------------------------------------------------------
-
-    mapping (address => uint)  public  balanceOf;
+    mapping (address => uint)                       public  balanceOf;
+    mapping (address => mapping (address => uint))  public  allowance;
 
     event Transfer(
         address  indexed  owner,
         address  indexed  recipient,
         uint              value
     );
+
+    event Approval(
+        address  indexed  owner,
+        address  indexed  spender,
+        uint              value
+    );
+
+    event Deposit    (address indexed owner, uint value);
+    event Withdrawal (address indexed owner, uint value);
+
+    function totalSupply() constant returns (uint) {
+        return this.balance;
+    }
 
     function transfer(address recipient, uint value) returns (bool) {
         assert(balanceOf[msg.sender] >= value);
@@ -37,29 +47,10 @@ contract WETH {
         return true;
     }
 
-    //------------------------------------------------------
-    // Allowances and approvals
-    //------------------------------------------------------
-
-    mapping (address => mapping (address => uint))  public  allowance;
-
-    event Approval(
-        address  indexed  owner,
-        address  indexed  spender,
-        uint              value
-    );
-
     function approve(address spender, uint value) returns (bool) {
         allowance[msg.sender][spender] = value;
         Approval(msg.sender, spender, value);
     }
-
-    //------------------------------------------------------
-    // Deposits and withdrawals
-    //------------------------------------------------------
-
-    event Deposit    (address indexed owner, uint value);
-    event Withdrawal (address indexed owner, uint value);
 
     function deposit() payable {
         balanceOf[msg.sender] += msg.value;
@@ -71,13 +62,5 @@ contract WETH {
         balanceOf[msg.sender] -= value;
         assert(msg.sender.send(value));
         Withdrawal(msg.sender, value);
-    }
-
-    //------------------------------------------------------
-    // Helper functions
-    //------------------------------------------------------
-
-    function assert(bool condition) internal {
-        if (!condition) throw;
     }
 }
