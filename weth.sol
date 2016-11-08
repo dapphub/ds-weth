@@ -20,8 +20,17 @@ contract WETH {
         uint              value
     );
 
-    event Deposit    (address indexed owner, uint value);
-    event Withdrawal (address indexed owner, uint value);
+    // Not ERC20
+    event Deposit(
+        address  indexed  owner,
+        uint              value
+    );
+    
+    // Not ERC20
+    event Withdrawal(
+        address  indexed  owner,
+        uint              value
+    );
 
     function totalSupply() constant returns (uint) {
         return this.balance;
@@ -52,11 +61,13 @@ contract WETH {
         Approval(msg.sender, spender, value);
     }
 
+    // Not ERC20
     function deposit() payable {
         balanceOf[msg.sender] += msg.value;
         Deposit(msg.sender, msg.value);
     }
 
+    // Not ERC20
     function withdraw(uint value) {
         assert(balanceOf[msg.sender] >= value);
         balanceOf[msg.sender] -= value;
