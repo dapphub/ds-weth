@@ -59,6 +59,7 @@ contract WETH {
     function approve(address spender, uint value) returns (bool) {
         allowance[msg.sender][spender] = value;
         Approval(msg.sender, spender, value);
+        return true;
     }
 
     // Not ERC20
