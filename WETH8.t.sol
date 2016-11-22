@@ -1,43 +1,27 @@
-/*
-   Copyright 2016 Nexus Development, LLC
+/// WETH8.t.sol -- tests for WETH8
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-*/
+// Copyright 2016  Nexus Development, LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// A copy of the License may be obtained at the following URL:
+//
+//    https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 pragma solidity ^0.4.4;
 
 import "dapple/test.sol";
-import "weth.sol";
 
-contract Person {
-    WETH weth;
-    function Person(WETH _weth) { weth = _weth; }
-    function () payable {}
-    function deposit() payable { weth.deposit.value(msg.value)(); }
-    function withdraw(uint value) { weth.withdraw(value); }
-    function transfer(Person recipient, uint value) {
-        if (!weth.transfer(recipient, value)) throw;
-    }
-    function approve(Person spender, uint value) {
-        if (!weth.approve(spender, value)) throw;
-    }
-    function transfer(Person owner, Person recipient, uint value) {
-        if (!weth.transferFrom(owner, recipient, value)) throw;
-    }
-}
+import "WETH8.sol";
 
-contract WETHTest is Test {
-    WETH    weth   = new WETH();
+contract WETH8Test is Test, WETH8Events {
+    WETH8   weth   = new WETH8();
     Person  alice  = new Person(weth);
     Person  bob    = new Person(weth);
     Person  carol  = new Person(weth);
@@ -176,9 +160,6 @@ contract WETHTest is Test {
         assertEq(weth.totalSupply(), supply);
     }
 
-    event Deposit     (address indexed owner, uint value);
-    event Withdrawal  (address indexed owner, uint value);
-
     function perform_deposit(Person owner, uint value) {
         Deposit(owner, value);
         owner.deposit.value(value)();
@@ -189,24 +170,12 @@ contract WETHTest is Test {
         owner.withdraw(value);
     }
 
-    event Transfer(
-        address  indexed  owner,
-        address  indexed  recipient,
-        uint              value
-    );
-
     function perform_transfer(
         Person owner, uint value, Person recipient
     ) {
         Transfer(owner, recipient, value);
         owner.transfer(recipient, value);
     }
-
-    event Approval(
-        address  indexed  owner,
-        address  indexed  spender,
-        uint              value
-    );
 
     function perform_approval(Person owner, uint value, Person spender) {
         Approval(owner, spender, value);
@@ -222,5 +191,36 @@ contract WETHTest is Test {
     ) {
         Transfer(owner, recipient, value);
         spender.transfer(owner, recipient, value);
+    }
+}
+
+contract Person {
+    WETH8 weth;
+    
+    function Person(WETH8 _weth) {
+        weth = _weth;
+    }
+    
+    function deposit() payable {
+        weth.deposit.value(msg.value)();
+    }
+    
+    function withdraw(uint value) {
+        weth.withdraw(value);
+    }
+    
+    function () payable {
+    }
+    
+    function transfer(Person recipient, uint value) {
+        if (!weth.transfer(recipient, value)) throw;
+    }
+    
+    function approve(Person spender, uint value) {
+        if (!weth.approve(spender, value)) throw;
+    }
+    
+    function transfer(Person owner, Person recipient, uint value) {
+        if (!weth.transferFrom(owner, recipient, value)) throw;
     }
 }

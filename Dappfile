@@ -1,5 +1,5 @@
-name: weth
-version: 9K
+name:      weth
+version:   0
 layout:
-  sol_sources: .
-  build_dir: .dapple/build
+  sol_sources:   .
+  build_dir:     .dapple/build
