@@ -1,4 +1,4 @@
-/// WETH.sol -- Wrap ETH into a contract
+/// WETH.sol -- Efficient ETH -> DSToken wrapper
 
 // Copyright 2016, 2017  Nexus Development, LLC
 //
@@ -18,22 +18,23 @@ pragma solidity ^0.4.15;
 
 contract WETH {
 
-    mapping (address => mapping(address=>bool) ) deps;
+    mapping ( address => uint128 ) bals;
+    mapping ( address => mapping ( address => bool) ) deps;
 
     event Wrap(
         address indexed who,
-        uint256         amt
+        uint128         amt
     );
 
-    event Unwrap(
+    event Parw(
         address indexed who,
-        uint256         amt
+        uint128         amt
     );
 
     event Move(
         address indexed src,
         address indexed dst,
-        uint256 amt
+        uint128         amt
     );
 
     event Rely(
@@ -46,14 +47,45 @@ contract WETH {
     );
 
 
+    // actions
+    function wrap()
+        payable
+    {
+        wrap(msg.value);
+    }
+    function wrap(uint128 wad)
+        payable
+    {
+        wrap(msg.sender, wad);
+    }
+    function wrap(address who, uint128 wad) {
+        require(msg.value == wad);        
+        move(who, this, wad);
+    }
+
+
+    function parw()
+    function parw(...)
+    
+    function move(src, dst, wad) {
+        require(false); // TODO
+        Move(src, dst, wad);
+    }
+    function push(dst, wad) {
+        move(this, dst, wad);
+    }
+    function pull(src, wad) {
+        move(src, this, wad);
+    }
+
+    function size() returns (uint128 wad) {
+        return this.balance;
+    }
 
 
     //----------------------------------------------------------------
     // ERC20    sucks
     //----------------------------------------------------------------
-
-    mapping (address => uint)                       public  balanceOf;
-    mapping (address => mapping (address => uint))  public  allowance;
 
     function totalSupply() constant returns (uint) {
         return this.balance;
