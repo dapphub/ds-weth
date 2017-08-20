@@ -1,6 +1,6 @@
-/// WETH8.sol -- minimal standalone ERC20 wrapper for ETH
+/// WETH.sol -- Wrap ETH into a contract
 
-// Copyright 2016  Nexus Development, LLC
+// Copyright 2016, 2017  Nexus Development, LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,15 +18,33 @@ pragma solidity ^0.4.15;
 
 contract WETH {
 
-    event wrap(
-        address indexed who;
-        uint256         amt;
+    mapping (address => mapping(address=>bool) ) deps;
+
+    event Wrap(
+        address indexed who,
+        uint256         amt
     );
 
-    event unwrap(
-        address indexed who;
-        uint256         amt;
+    event Unwrap(
+        address indexed who,
+        uint256         amt
     );
+
+    event Move(
+        address indexed src,
+        address indexed dst,
+        uint256 amt
+    );
+
+    event Rely(
+        address indexed src,
+        address indexed dst
+    );
+    event Deny(
+        address indexed src,
+        address indexed dst
+    );
+
 
 
 
@@ -37,25 +55,12 @@ contract WETH {
     mapping (address => uint)                       public  balanceOf;
     mapping (address => mapping (address => uint))  public  allowance;
 
-    event Transfer(
-        address  indexed  owner,
-        address  indexed  recipient,
-        uint              value
-    );
-
-    event Approval(
-        address  indexed  owner,
-        address  indexed  spender,
-        uint              value
-    );
-
-
     function totalSupply() constant returns (uint) {
         return this.balance;
     }
 
-    function transfer(address recipient, uint value) returns (bool) {
-        NOCOMPILE //  safemath?
+
+    function transfer(address recipient, uint256 value) returns (bool) {
         assert(balanceOf[msg.sender] >= value);
         balanceOf[msg.sender] -= value;
         balanceOf[recipient] += value;
