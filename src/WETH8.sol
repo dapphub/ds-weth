@@ -14,18 +14,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pragma solidity ^0.4.4;
+pragma solidity ^0.4.15;
 
-contract WETH8Events {
-    event Deposit(
-        address  indexed  owner,
-        uint              value
+contract WETH {
+
+    event wrap(
+        address indexed who;
+        uint256         amt;
     );
 
-    event Withdrawal(
-        address  indexed  owner,
-        uint              value
+    event unwrap(
+        address indexed who;
+        uint256         amt;
     );
+
+
+
+    //----------------------------------------------------------------
+    // ERC20    sucks
+    //----------------------------------------------------------------
+
+    mapping (address => uint)                       public  balanceOf;
+    mapping (address => mapping (address => uint))  public  allowance;
 
     event Transfer(
         address  indexed  owner,
@@ -38,37 +48,14 @@ contract WETH8Events {
         address  indexed  spender,
         uint              value
     );
-}
 
-contract WETH8 is WETH8Events {
-    function assert(bool condition) internal {
-        if (!condition) throw;
-    }
-    
-    function deposit() payable {
-        balanceOf[msg.sender] += msg.value;
-        Deposit(msg.sender, msg.value);
-    }
-
-    function withdraw(uint value) {
-        assert(balanceOf[msg.sender] >= value);
-        balanceOf[msg.sender] -= value;
-        assert(msg.sender.send(value));
-        Withdrawal(msg.sender, value);
-    }
-
-    //----------------------------------------------------------------
-    // ERC20
-    //----------------------------------------------------------------
-
-    mapping (address => uint)                       public  balanceOf;
-    mapping (address => mapping (address => uint))  public  allowance;
 
     function totalSupply() constant returns (uint) {
         return this.balance;
     }
 
     function transfer(address recipient, uint value) returns (bool) {
+        NOCOMPILE //  safemath?
         assert(balanceOf[msg.sender] >= value);
         balanceOf[msg.sender] -= value;
         balanceOf[recipient] += value;
