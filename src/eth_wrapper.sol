@@ -16,11 +16,11 @@ contract DSEthToken is DSTokenBase(0)
     string public constant symbol   = "W-ETH";
     uint   public constant decimals = 18;
 
-    function withdraw(uint amount) {
+    function withdraw(uint amount) public {
         assert(tryWithdraw(amount));
     }
 
-    function tryWithdraw(uint amount) returns (bool ok) {
+    function tryWithdraw(uint amount) public returns (bool ok) {
         _balances[msg.sender] = sub(_balances[msg.sender], amount);
         _supply = sub(_supply, amount);
         if (tryExec(msg.sender, amount)) {
@@ -32,22 +32,22 @@ contract DSEthToken is DSTokenBase(0)
             return false;
         }
     }
-    
-    function deposit() payable {
+
+    function deposit() public payable {
         _balances[msg.sender] = add(_balances[msg.sender], msg.value);
         _supply = add(_supply, msg.value);
         Deposit(msg.sender, msg.value);
     }
 
-    function() payable {
+    function() public payable {
         deposit();
     }
 
-    function unwrap(uint amount) {
+    function unwrap(uint amount) public {
         withdraw(amount);
     }
 
-    function wrap() payable {
+    function wrap() public payable {
         deposit();
     }
 }
