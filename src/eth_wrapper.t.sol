@@ -1,9 +1,9 @@
-pragma solidity ^0.4.10;
+pragma solidity ^0.4.18;
 
 import "ds-test/test.sol";
-import 'ds-token/base.sol';
-import 'ds-token/base.t.sol';
-import './eth_wrapper.sol';
+import "ds-token/base.t.sol";
+
+import "./eth_wrapper.sol";
 
 contract DSEthTokenTest is DSTokenBaseTest, DSEthTokenEvents {
     function() payable {}
