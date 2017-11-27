@@ -1,61 +1,13 @@
 pragma solidity ^0.4.18;
 
-contract WETHEvents {
-    event Deposit    (address guy, uint wad);
-    event Withdrawal (address guy, uint wad);
+import "erc20/erc20.sol";
 
-    event Transfer   (address src, address dst, uint wad);
-    event Approval   (address src, address guy, uint wad);
+contract WETHEvents is ERC20Events {
+    event Deposit      (address indexed dst, uint wad);
+    event Withdrawal   (address indexed src, uint wad);
 }
 
-contract WETH {
-    mapping (address => uint)                       balances;
-    mapping (address => mapping (address => uint))  allowances;
-
-    function deposit() public payable {
-        balances[msg.sender] += msg.value;
-    }
-
-    function withdraw(uint wad) public {
-        require(balances[msg.sender] >= wad);
-        balances[msg.sender] -= wad;
-        require(msg.sender.send(wad)); // XXX
-    }
-
-    function balanceOf(address guy) public view returns (uint) {
-        return balances[guy];
-    }
-
-    function totalSupply() public view returns (uint) {
-        return this.balance;
-    }
-
-    function allowance(address src, address guy) public view returns (uint) {
-        return allowances[src][guy];
-    }
-
-    function approve(address guy, uint wad) public returns (bool) {
-        allowances[msg.sender][guy] = wad;
-        return true;
-    }
-
-    function transfer(address dst, uint wad) public returns (bool) {
-        return transferFrom(msg.sender, dst, wad);
-    }
-
-    function transferFrom(
-        address src, address dst, uint wad
-    ) public returns (bool) {
-        require(balances[src] >= wad);
-
-        if (src != msg.sender) {
-            require(allowances[src][msg.sender] >= wad);
-            allowances[src][msg.sender] -= wad;
-        }
-
-        balances[src] -= wad;
-        balances[dst] += wad;
-
-        return true;
-    }
+contract WETH is ERC20, WETHEvents {
+    function deposit() public payable;
+    function withdraw(uint wad) public;
 }

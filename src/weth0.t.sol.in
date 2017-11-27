@@ -1,0 +1,12 @@
+#!/bin/sh
+cat <<.
+pragma solidity ^0.4.18;
+
+import "./weth1.t.gen.sol";
+
+contract WETH0Test is WETH1Test {
+    function newWETH() public returns (WETH) {
+        return WETH(make(hex"$(cat out/WETH0.bin)"));
+    }
+}
+.

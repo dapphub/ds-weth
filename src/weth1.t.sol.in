@@ -1,0 +1,23 @@
+#!/bin/sh
+cat <<.
+pragma solidity ^0.4.18;
+
+import "./weth9.t.sol";
+
+contract WETH1Test is WETH9Test {
+    function newWETH() public returns (WETH) {
+        return WETH(make(hex"$(cat out/WETH1.bin)"));
+    }
+
+    function make(bytes code) internal returns (address result) {
+        uint size;
+
+        assembly {
+            result := create(0, add(code, 0x20), mload(code))
+            size := extcodesize(result)
+        }
+
+        require(size > 0);
+    }
+}
+.
