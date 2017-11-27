@@ -5,9 +5,9 @@ pragma solidity ^0.4.18;
 import "./weth9.t.sol";
 import "./factory.sol";
 
-contract WETH1Test is WETH9Test, Factory {
+contract WETH2Test is WETH9Test, Factory {
     function newWETH() public returns (WETH) {
-        return WETH(make(hex"$(cat out/WETH1.bin)"));
+        return WETH(make(hex"$(cat weth2.bin)"));
     }
 }
 .
