@@ -4,35 +4,25 @@ import "./weth.sol";
 
 // Can't implement WETH because Solidity is silly
 contract WETH9 is WETHEvents {
-    mapping (address => uint)                       balances;
-    mapping (address => mapping (address => uint))  allowances;
+    mapping (address => uint)                       public  balanceOf;
+    mapping (address => mapping (address => uint))  public  allowance;
 
     function deposit() public payable {
-        balances[msg.sender] += msg.value;
+        balanceOf[msg.sender] += msg.value;
     }
 
     function withdraw(uint wad) public {
-        require(balances[msg.sender] >= wad);
-        balances[msg.sender] -= wad;
+        require(balanceOf[msg.sender] >= wad);
+        balanceOf[msg.sender] -= wad;
         require(msg.sender.send(wad)); // XXX
-    }
-
-    function balanceOf(address guy) public view returns (uint) {
-        return balances[guy];
     }
 
     function totalSupply() public view returns (uint) {
         return this.balance;
     }
 
-    function allowance(
-        address src, address guy
-    ) public view returns (uint) {
-        return allowances[src][guy];
-    }
-
     function approve(address guy, uint wad) public returns (bool) {
-        allowances[msg.sender][guy] = wad;
+        allowance[msg.sender][guy] = wad;
         return true;
     }
 
@@ -43,15 +33,15 @@ contract WETH9 is WETHEvents {
     function transferFrom(
         address src, address dst, uint wad
     ) public returns (bool) {
-        require(balances[src] >= wad);
+        require(balanceOf[src] >= wad);
 
         if (src != msg.sender) {
-            require(allowances[src][msg.sender] >= wad);
-            allowances[src][msg.sender] -= wad;
+            require(allowance[src][msg.sender] >= wad);
+            allowance[src][msg.sender] -= wad;
         }
 
-        balances[src] -= wad;
-        balances[dst] += wad;
+        balanceOf[src] -= wad;
+        balanceOf[dst] += wad;
 
         return true;
     }
