@@ -7,14 +7,14 @@ contract WETH9 is WETHEvents {
     mapping (address => uint)                       public  balanceOf;
     mapping (address => mapping (address => uint))  public  allowance;
 
-    function deposit() public payable {
+    function join() public payable {
         balanceOf[msg.sender] += msg.value;
     }
 
-    function withdraw(uint wad) public {
+    function exit(uint wad) public {
         require(balanceOf[msg.sender] >= wad);
         balanceOf[msg.sender] -= wad;
-        require(msg.sender.send(wad)); // XXX
+        require(msg.sender.send(wad)); // XXX: tested?
     }
 
     function totalSupply() public view returns (uint) {

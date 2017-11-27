@@ -37,55 +37,55 @@ contract WETH9Test is DSTest, WETHEvents {
         assert_weth_supply   (0 finney);
     }
 
-    function test_deposit() public {
+    function test_join() public {
         expectEventsExact    (weth);
 
-        perform_deposit      (a, 3 finney);
+        perform_join         (a, 3 finney);
         assert_weth_balance  (a, 3 finney);
         assert_weth_balance  (b, 0 finney);
         assert_eth_balance   (a, 0 finney);
         assert_weth_supply   (3 finney);
 
-        perform_deposit      (a, 4 finney);
+        perform_join         (a, 4 finney);
         assert_weth_balance  (a, 7 finney);
         assert_weth_balance  (b, 0 finney);
         assert_eth_balance   (a, 0 finney);
         assert_weth_supply   (7 finney);
 
-        perform_deposit      (b, 5 finney);
+        perform_join         (b, 5 finney);
         assert_weth_balance  (b, 5 finney);
         assert_weth_balance  (a, 7 finney);
         assert_weth_supply   (12 finney);
     }
 
-    function testFail_withdrawal_1() public {
-        perform_withdrawal   (a, 1 wei);
+    function testFail_exital_1() public {
+        perform_exit         (a, 1 wei);
     }
 
-    function testFail_withdrawal_2() public {
-        perform_deposit      (a, 1 finney);
-        perform_withdrawal   (b, 1 wei);
+    function testFail_exit_2() public {
+        perform_join         (a, 1 finney);
+        perform_exit         (b, 1 wei);
     }
 
-    function testFail_withdrawal_3() public {
-        perform_deposit      (a, 1 finney);
-        perform_deposit      (b, 1 finney);
-        perform_withdrawal   (b, 1 finney);
-        perform_withdrawal   (b, 1 wei);
+    function testFail_exit_3() public {
+        perform_join         (a, 1 finney);
+        perform_join         (b, 1 finney);
+        perform_exit         (b, 1 finney);
+        perform_exit         (b, 1 wei);
     }
 
-    function test_withdrawal() public {
+    function test_exit() public {
         expectEventsExact    (weth);
 
-        perform_deposit      (a, 7 finney);
+        perform_join         (a, 7 finney);
         assert_weth_balance  (a, 7 finney);
         assert_eth_balance   (a, 0 finney);
 
-        perform_withdrawal   (a, 3 finney);
+        perform_exit         (a, 3 finney);
         assert_weth_balance  (a, 4 finney);
         assert_eth_balance   (a, 3 finney);
 
-        perform_withdrawal   (a, 4 finney);
+        perform_exit         (a, 4 finney);
         assert_weth_balance  (a, 0 finney);
         assert_eth_balance   (a, 7 finney);
     }
@@ -95,15 +95,15 @@ contract WETH9Test is DSTest, WETHEvents {
     }
 
     function testFail_transfer_2() public {
-        perform_deposit      (a, 1 finney);
-        perform_withdrawal   (a, 1 finney);
+        perform_join         (a, 1 finney);
+        perform_exit         (a, 1 finney);
         perform_transfer     (a, 1 wei, b);
     }
 
     function test_transfer() public {
         expectEventsExact    (weth);
 
-        perform_deposit      (a, 7 finney);
+        perform_join         (a, 7 finney);
         perform_transfer     (a, 3 finney, b);
         assert_weth_balance  (a, 4 finney);
         assert_weth_balance  (b, 3 finney);
@@ -115,7 +115,7 @@ contract WETH9Test is DSTest, WETHEvents {
     }
 
     function testFail_transferFrom_2() public {
-        perform_deposit      (a, 7 finney);
+        perform_join         (a, 7 finney);
         perform_approval     (a, 3 finney, b);
         perform_transfer     (b, 4 finney, a, c);
     }
@@ -123,7 +123,7 @@ contract WETH9Test is DSTest, WETHEvents {
     function test_transferFrom() public {
         expectEventsExact    (weth);
 
-        perform_deposit      (a, 7 finney);
+        perform_join         (a, 7 finney);
         perform_approval     (a, 5 finney, b);
         assert_weth_balance  (a, 7 finney);
         assert_allowance     (b, 5 finney, a);
@@ -160,14 +160,14 @@ contract WETH9Test is DSTest, WETHEvents {
         assertEq(weth.totalSupply(), supply);
     }
 
-    function perform_deposit(Guy guy, uint wad) public {
-        Deposit(guy, wad);
-        guy.deposit.value(wad)();
+    function perform_join(Guy guy, uint wad) public {
+        Join(guy, wad);
+        guy.join.value(wad)();
     }
 
-    function perform_withdrawal(Guy guy, uint wad) public {
-        Withdrawal(guy, wad);
-        guy.withdraw(wad);
+    function perform_exit(Guy guy, uint wad) public {
+        Exit(guy, wad);
+        guy.exit(wad);
     }
 
     function perform_transfer(
@@ -205,12 +205,12 @@ contract Guy {
         weth = _weth;
     }
 
-    function deposit() payable public {
-        weth.deposit.value(msg.value)();
+    function join() payable public {
+        weth.join.value(msg.value)();
     }
 
-    function withdraw(uint wad) public {
-        weth.withdraw(wad);
+    function exit(uint wad) public {
+        weth.exit(wad);
     }
 
     function () public payable {

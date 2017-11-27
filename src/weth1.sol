@@ -9,8 +9,8 @@ contract WETH1 { function () public payable { assembly {
   32 not sstore                         // Save new total supply to storage
   caller sload callvalue add            // Calculate new target balance
   caller sstore                         // Save new target balance to storage
-  // Emit `Deposit(address indexed, uint)'
-  0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c
+  // Emit `Join(address indexed, uint)'
+  0xb4e09949657f21548b58afe74e7b86cd2295da5ff1598ae1e5faecb1cf19ca95
   callvalue 0 mstore caller swap1 32 0 log2
 
 dispatch:
@@ -21,11 +21,14 @@ dispatch:
   dup1 0x095ea7b3 eq      approve jumpi
   dup1 0xa9059cbb eq     transfer jumpi
   dup1 0x23b872dd eq transferFrom jumpi
-  dup1 0xd0e30db0 eq         exit jumpi // Deposit does nothing extra
-  dup1 0x2e1a7d4d eq     withdraw jumpi
+  dup1 0xd0e30db0 eq         join jumpi
+  dup1 0x2e1a7d4d eq     exit jumpi
 fail:
   revert
-exit:
+quit:
+  stop
+
+join:
   stop
 
 totalSupply:
@@ -79,7 +82,7 @@ PerformTransfer:
   1 0 mstore 32 0 return                // Return true
   pop
 
-withdraw:
+exit:
   4 calldataload                        // Load amount to withdraw
   caller sload                          // Load source balance from storage
   dup2 dup2 sub                         // Calculate new source balance
@@ -91,8 +94,8 @@ withdraw:
   0 0 0 0                               // No return data and no calldata
   dup5 caller                           // Send withdrawal amount to caller
   gaslimit call iszero       fail jumpi // Make call, aborting on failure
-  // Emit `Withdrawal(address indexed, uint)'
-  0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65
+  // Emit `Exit(address indexed, uint)'
+  0x22d324652c93739755cf4581508b60875ebdd78c20c0cff5cf8e23452b299631
   swap1 0 mstore caller swap1 32 0 log2
   1 0 mstore 32 0 return                // Return true
 
