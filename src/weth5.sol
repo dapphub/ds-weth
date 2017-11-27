@@ -17,7 +17,7 @@ contract WETH5 is WETHEvents {
     }
 
     function() public payable {
-        join();
+        deposit();
     }
 
     function deposit() public payable {
