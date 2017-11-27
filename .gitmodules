@@ -7,6 +7,3 @@
 [submodule "lib/ds-exec"]
 	path = lib/ds-exec
 	url = https://github.com/dapphub/ds-exec
-[submodule "lib/erc20"]
-	path = lib/erc20
-	url = https://github.com/dapphub/erc20
