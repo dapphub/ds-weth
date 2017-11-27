@@ -20,11 +20,11 @@ contract WETH5 is WETHEvents {
         join();
     }
 
-    function join() public payable {
+    function deposit() public payable {
         balanceOf[msg.sender] = add(balanceOf[msg.sender], msg.value);
     }
 
-    function exit(uint wad) public {
+    function withdraw(uint wad) public {
         balanceOf[msg.sender] = sub(balanceOf[msg.sender], wad);
         msg.sender.transfer(wad);  // XXX
     }
@@ -36,12 +36,6 @@ contract WETH5 is WETHEvents {
     function approve(address guy, uint wad) public returns (bool) {
         allowance[msg.sender][guy] = wad;
         Approval(msg.sender, guy, wad);
-        return true;
-    }
-
-    function approve(address guy) public returns (bool) {
-        allowance[msg.sender][guy] = uint(-1);
-        Approval(msg.sender, guy, uint(-1));
         return true;
     }
 
@@ -64,6 +58,15 @@ contract WETH5 is WETHEvents {
         return true;
     }
 
+    function approve(address guy) public returns (bool) {
+        return approve(guy, uint(-1));
+    }
+    function join() public payable {
+        deposit();
+    }
+    function exit(uint wad) public {
+        withdraw(wad);
+    }
     function push(address dst, uint wad) public {
         transferFrom(msg.sender, dst, wad);
     }
