@@ -63,4 +63,14 @@ contract WETH5 is WETHEvents {
 
         return true;
     }
+
+    function push(address dst, uint wad) public {
+        transferFrom(msg.sender, dst, wad);
+    }
+    function pull(address src, uint wad) public {
+        transferFrom(src, msg.sender, wad);
+    }
+    function move(address src, address dst, uint wad) public {
+        transferFrom(src, dst, wad);
+    }
 }
