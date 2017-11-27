@@ -9,24 +9,18 @@ contract WETH5 is WETHEvents {
     event Approval(address indexed src, address indexed guy, uint wad);
     event Transfer(address indexed src, address indexed dst, uint wad);
 
-    function add(uint x, uint y) internal pure returns (uint z) {
-        require((z = x + y) >= x);
-    }
-    function sub(uint x, uint y) internal pure returns (uint z) {
-        require((z = x - y) <= x);
-    }
-
     function() public payable {
         deposit();
     }
 
     function deposit() public payable {
-        balanceOf[msg.sender] = add(balanceOf[msg.sender], msg.value);
+        balanceOf[msg.sender] += msg.value;
     }
 
     function withdraw(uint wad) public {
-        balanceOf[msg.sender] = sub(balanceOf[msg.sender], wad);
-        msg.sender.transfer(wad);  // XXX
+        require(balanceOf[msg.sender] >= wad);
+        balanceOf[msg.sender] -= wad;
+        msg.sender.transfer(wad);
     }
 
     function totalSupply() public view returns (uint) {
@@ -46,12 +40,15 @@ contract WETH5 is WETHEvents {
     function transferFrom(
         address src, address dst, uint wad
     ) public returns (bool) {
+        require(balanceOf[src] >= wad);
+
         if (src != msg.sender && allowance[src][dst] != uint(-1)) {
-            allowance[src][msg.sender] = sub(allowance[src][msg.sender], wad);
+            require(allowance[src][msg.sender] >= wad);
+            allowance[src][msg.sender] -= wad;
         }
 
-        balanceOf[src] = sub(balanceOf[src], wad);
-        balanceOf[dst] = add(balanceOf[dst], wad);
+        balanceOf[src] -= wad;
+        balanceOf[dst] += wad;
 
         Transfer(src, dst, wad);
 
