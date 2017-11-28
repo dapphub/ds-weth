@@ -6,9 +6,6 @@ contract WETH5 is WETHEvents {
     mapping (address => uint)                       public  balanceOf;
     mapping (address => mapping (address => uint))  public  allowance;
 
-    event Approval(address indexed src, address indexed guy, uint wad);
-    event Transfer(address indexed src, address indexed dst, uint wad);
-
     function() public payable {
         deposit();
     }
