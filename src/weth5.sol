@@ -25,17 +25,17 @@ contract WETH5 {
     mapping (address => mapping (address => uint))  public  allowance;
 
     function() public payable {
-        deposit();
+        join();
     }
-
-    function deposit() public payable {
+    function join() public payable {
         balanceOf[msg.sender] += msg.value;
+        Join(msg.sender, msg.value);
     }
-
-    function withdraw(uint wad) public {
+    function exit(uint wad) public {
         require(balanceOf[msg.sender] >= wad);
         balanceOf[msg.sender] -= wad;
         msg.sender.transfer(wad);
+        Exit(msg.sender, wad);
     }
 
     function totalSupply() public view returns (uint) {
@@ -72,12 +72,6 @@ contract WETH5 {
 
     function approve(address guy) public returns (bool) {
         return approve(guy, uint(-1));
-    }
-    function join() public payable {
-        deposit();
-    }
-    function exit(uint wad) public {
-        withdraw(wad);
     }
     function push(address dst, uint wad) public {
         transferFrom(msg.sender, dst, wad);
