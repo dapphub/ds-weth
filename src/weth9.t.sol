@@ -2,7 +2,17 @@ pragma solidity ^0.4.18;
 
 import "ds-test/test.sol";
 
+import "./weth.sol";
 import "./weth9.sol";
+
+contract WETH9 is WETH9_ {
+    function join() public payable {
+        deposit();
+    }
+    function exit(uint wad) public {
+        withdraw(wad);
+    }
+}
 
 contract WETH9Test is DSTest, WETHEvents {
     WETH  weth;
