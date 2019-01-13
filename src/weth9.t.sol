@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity >=0.4.23;
 
 import "ds-test/test.sol";
 
@@ -15,7 +15,7 @@ contract WETH9 is WETH9_ {
 }
 
 contract WETH9Test is DSTest, WETHEvents {
-    WETH  weth;
+    WETH9  weth;
     Guy   a;
     Guy   b;
     Guy   c;
@@ -27,9 +27,8 @@ contract WETH9Test is DSTest, WETHEvents {
         c     = this.newGuy();
     }
 
-    function newWETH() public returns (WETH) {
-        // Need cast here because Solidity is silly
-        return WETH(new WETH9());
+    function newWETH() public returns (WETH9) {
+        return new WETH9();
     }
 
     function newGuy() public returns (Guy) {
@@ -48,7 +47,7 @@ contract WETH9Test is DSTest, WETHEvents {
     }
 
     function test_join() public {
-        expectEventsExact    (weth);
+        expectEventsExact    (address(weth));
 
         perform_join         (a, 3 finney);
         assert_weth_balance  (a, 3 finney);
@@ -85,7 +84,7 @@ contract WETH9Test is DSTest, WETHEvents {
     }
 
     function test_exit() public {
-        expectEventsExact    (weth);
+        expectEventsExact    (address(weth));
 
         perform_join         (a, 7 finney);
         assert_weth_balance  (a, 7 finney);
@@ -111,7 +110,7 @@ contract WETH9Test is DSTest, WETHEvents {
     }
 
     function test_transfer() public {
-        expectEventsExact    (weth);
+        expectEventsExact    (address(weth));
 
         perform_join         (a, 7 finney);
         perform_transfer     (a, 3 finney, b);
@@ -131,7 +130,7 @@ contract WETH9Test is DSTest, WETHEvents {
     }
 
     function test_transferFrom() public {
-        expectEventsExact    (weth);
+        expectEventsExact    (address(this));
 
         perform_join         (a, 7 finney);
         perform_approval     (a, 5 finney, b);
@@ -159,11 +158,11 @@ contract WETH9Test is DSTest, WETHEvents {
     //------------------------------------------------------------------
 
     function assert_eth_balance(Guy guy, uint balance) public {
-        assertEq(guy.balance, balance);
+        assertEq(address(guy).balance, balance);
     }
 
     function assert_weth_balance(Guy guy, uint balance) public {
-        assertEq(weth.balanceOf(guy), balance);
+        assertEq(weth.balanceOf(address(guy)), balance);
     }
 
     function assert_weth_supply(uint supply) public {
@@ -171,47 +170,47 @@ contract WETH9Test is DSTest, WETHEvents {
     }
 
     function perform_join(Guy guy, uint wad) public {
-        Join(guy, wad);
+        emit Join(address(guy), wad);
         guy.join.value(wad)();
     }
 
     function perform_exit(Guy guy, uint wad) public {
-        Exit(guy, wad);
+        emit Exit(address(guy), wad);
         guy.exit(wad);
     }
 
     function perform_transfer(
         Guy src, uint wad, Guy dst
     ) public {
-        Transfer(src, dst, wad);
+        emit Transfer(address(src), address(dst), wad);
         src.transfer(dst, wad);
     }
 
     function perform_approval(
         Guy src, uint wad, Guy guy
     ) public {
-        Approval(src, guy, wad);
+        emit Approval(address(src), address(guy), wad);
         src.approve(guy, wad);
     }
 
     function assert_allowance(
         Guy guy, uint wad, Guy src
     ) public {
-        assertEq(weth.allowance(src, guy), wad);
+        assertEq(weth.allowance(address(src), address(guy)), wad);
     }
 
     function perform_transfer(
         Guy guy, uint wad, Guy src, Guy dst
     ) public {
-        Transfer(src, dst, wad);
+        emit Transfer(address(src), address(dst), wad);
         guy.transfer(src, dst, wad);
     }
 }
 
 contract Guy {
-    WETH weth;
+    WETH9 weth;
 
-    function Guy(WETH _weth) public {
+    constructor(WETH9 _weth) public {
         weth = _weth;
     }
 
@@ -223,18 +222,18 @@ contract Guy {
         weth.exit(wad);
     }
 
-    function () public payable {
+    function () external payable {
     }
 
     function transfer(Guy dst, uint wad) public {
-        require(weth.transfer(dst, wad));
+        require(weth.transfer(address(dst), wad));
     }
 
     function approve(Guy guy, uint wad) public {
-        require(weth.approve(guy, wad));
+        require(weth.approve(address(guy), wad));
     }
 
     function transfer(Guy src, Guy dst, uint wad) public {
-        require(weth.transferFrom(src, dst, wad));
+        require(weth.transferFrom(address(src), address(dst), wad));
     }
 }

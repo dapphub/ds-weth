@@ -1,14 +1,12 @@
-pragma solidity ^0.4.18;
+pragma solidity >=0.4.23;
 
-contract Factory {
-    function make(bytes code) internal returns (address result) {
-        uint size;
+import "./weth9.sol";
 
-        assembly {
-            result := create(0, add(code, 0x20), mload(code))
-            size := extcodesize(result)
-        }
+contract DSWethFactory {
+    event LogMake(address indexed creator, address token);
 
-        require(size > 0);
+    function make() public returns (WETH9_ result) {
+        result = new WETH9_();
+        emit LogMake(msg.sender, address(result));
     }
 }
