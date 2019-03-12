@@ -1,4 +1,4 @@
-// Copyright (C) 2015, 2016, 2017 Dapphub
+// Copyright (C) 2015, 2016, 2017, 2019 Dapphub
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ contract WETH9_ {
     }
 
     function totalSupply() public view returns (uint) {
-      return address(this).balance;
+        return address(this).balance;
     }
 
     function approve(address guy, uint wad) public returns (bool) {
